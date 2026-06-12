@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruta360 — Prática de Português</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0f0a;--surface:#111a11;--surface2:#192019;--surface3:#202820;
+  --border:#2a3d2a;--border2:#344d34;
+  --green:#2ecc71;--green2:#27ae60;
+  --yellow:#f1c40f;--orange:#e67e22;--red:#e74c3c;
+  --blue:#3498db;--purple:#9b59b6;
+  --text:#f0f8f0;--muted:#7a9a7a;--muted2:#5a7a5a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;}
+.topnav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:rgba(10,15,10,0.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100;}
+.logo{display:flex;align-items:center;gap:8px;}
+.logo img{height:34px;width:34px;border-radius:7px;object-fit:cover;}
+.logo-text{font-weight:700;font-size:16px;}.logo-text em{font-style:normal;color:var(--green);}
+.xp-badge{display:flex;align-items:center;gap:5px;background:rgba(241,196,15,0.12);border:1px solid rgba(241,196,15,0.3);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--yellow);}
+#app{max-width:780px;margin:0 auto;padding:84px 20px 60px;}
+.screen{display:none;animation:fadeUp 0.35s ease;}.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO */
+.hero{text-align:center;padding:36px 0 28px;}
+.hero-badge{display:inline-block;padding:5px 14px;background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.3);border-radius:100px;font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--green);margin-bottom:20px;}
+.hero h1{font-size:clamp(28px,5vw,44px);font-weight:800;letter-spacing:-0.8px;line-height:1.15;margin-bottom:12px;}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{color:var(--muted);font-size:14px;max-width:460px;margin:0 auto 28px;}
+
+/* LEVEL CARDS */
+.level-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;}
+@media(max-width:560px){.level-cards{grid-template-columns:1fr;}}
+.level-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 18px;cursor:pointer;transition:all 0.2s;text-align:center;position:relative;overflow:hidden;}
+.level-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.level-card.basico::before{background:var(--green);}
+.level-card.intermedio::before{background:var(--yellow);}
+.level-card.avanzado::before{background:var(--orange);}
+.level-card:hover{transform:translateY(-3px);}
+.level-card.basico:hover{border-color:var(--green);}
+.level-card.intermedio:hover{border-color:var(--yellow);}
+.level-card.avanzado:hover{border-color:var(--orange);}
+.lc-icon{font-size:32px;margin-bottom:10px;}
+.lc-level{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.basico .lc-level{color:var(--green);}.intermedio .lc-level{color:var(--yellow);}.avanzado .lc-level{color:var(--orange);}
+.lc-name{font-size:17px;font-weight:700;margin-bottom:4px;}
+.lc-sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.lc-info{font-size:11px;color:var(--muted2);display:flex;justify-content:center;gap:10px;}
+
+/* PROGRESS */
+.prog-wrap{margin-bottom:22px;}
+.prog-top{display:flex;justify-content:space-between;margin-bottom:6px;}
+.prog-label{font-size:12px;font-weight:600;color:var(--muted);}
+.prog-count{font-size:12px;color:var(--muted);}
+.prog-track{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;transition:width 0.5s ease;}
+.fill-basico{background:linear-gradient(90deg,var(--green2),var(--green));}
+.fill-intermedio{background:linear-gradient(90deg,var(--orange),var(--yellow));}
+.fill-avanzado{background:linear-gradient(90deg,var(--red),var(--orange));}
+
+/* SECTION TABS */
+.sec-tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;}
+.sec-tab{padding:6px 13px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;}
+.sec-tab.active{background:rgba(46,204,113,0.15);border-color:var(--green);color:var(--green);}
+.sec-tab.done{background:rgba(46,204,113,0.07);border-color:var(--green2);color:var(--green2);}
+.sec-tab.done::after{content:' ✓';}
+
+/* EXERCISE CARD */
+.ex-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:18px;}
+.ex-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.ex-type{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:4px 10px;border-radius:6px;}
+.et-mcq{background:rgba(155,89,182,0.15);color:var(--purple);}
+.et-fill{background:rgba(52,152,219,0.15);color:var(--blue);}
+.et-match{background:rgba(46,204,113,0.15);color:var(--green);}
+.et-reorder{background:rgba(241,196,15,0.15);color:var(--yellow);}
+.ex-xp{font-size:11px;color:var(--muted);}
+.ex-instruction{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:6px;}
+.ex-question{font-size:15px;font-weight:600;margin-bottom:16px;line-height:1.5;}
+.ex-question em{font-style:normal;color:var(--yellow);border-bottom:2px dashed rgba(241,196,15,0.4);}
+
+/* DIALOGUE */
+.dialogue{background:var(--surface2);border-left:3px solid var(--green);border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:14px;line-height:1.8;color:#c0d8c0;}
+.dialogue-label{font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:6px;}
+
+/* OPTIONS */
+.options{display:grid;gap:8px;}
+.opt{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;cursor:pointer;transition:all 0.18s;font-size:14px;width:100%;text-align:left;color:var(--text);font-family:'Poppins',sans-serif;}
+.opt:hover:not([disabled]){border-color:var(--green);background:rgba(46,204,113,0.07);}
+.opt.selected{border-color:var(--green);background:rgba(46,204,113,0.12);}
+.opt.correct{border-color:var(--green);background:rgba(46,204,113,0.15);}
+.opt.wrong{border-color:var(--red);background:rgba(231,76,60,0.1);}
+.opt-letter{width:24px;height:24px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.opt.correct .opt-letter{background:var(--green);color:#000;}
+.opt.wrong .opt-letter{background:var(--red);color:#fff;}
+
+/* FILL */
+.fill-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.fill-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Poppins',sans-serif;font-size:14px;width:220px;transition:border-color 0.2s;}
+.fill-input:focus{outline:none;border-color:var(--green);}
+.fill-input.correct{border-color:var(--green);background:rgba(46,204,113,0.1);}
+.fill-input.wrong{border-color:var(--red);background:rgba(231,76,60,0.07);}
+.wrong-answer{font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* MATCH */
+.match-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.match-col{display:grid;gap:8px;}
+.m-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:13px;transition:all 0.18s;text-align:center;user-select:none;}
+.m-item:hover{border-color:var(--green);}
+.m-item.sel{border-color:var(--yellow);background:rgba(241,196,15,0.1);}
+.m-item.matched{border-color:var(--green);background:rgba(46,204,113,0.12);pointer-events:none;opacity:0.7;}
+.m-item.bad{border-color:var(--red);background:rgba(231,76,60,0.08);}
+
+/* REORDER */
+.reorder-hint{font-size:11px;color:var(--muted2);margin-bottom:8px;}
+.word-bank{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;min-height:46px;margin-bottom:10px;}
+.w-chip{background:var(--surface3);border:1px solid var(--border2);border-radius:7px;padding:6px 12px;cursor:pointer;font-size:13px;user-select:none;transition:all 0.15s;}
+.w-chip:hover{border-color:var(--green);background:rgba(46,204,113,0.1);}
+.w-chip.used{opacity:0.25;pointer-events:none;}
+.answer-area{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:rgba(46,204,113,0.04);border:1px dashed var(--border2);border-radius:10px;min-height:46px;margin-bottom:10px;}
+.a-chip{background:rgba(46,204,113,0.12);border:1px solid var(--green2);border-radius:7px;padding:6px 12px;font-size:13px;cursor:pointer;user-select:none;}
+.a-chip:hover{background:rgba(231,76,60,0.1);border-color:var(--red);}
+
+/* CHECK BTN */
+.check-btn{padding:9px 20px;border-radius:8px;border:none;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:var(--green2);color:#fff;transition:all 0.18s;margin-top:12px;}
+.check-btn:hover{background:var(--green);transform:translateY(-1px);}
+
+/* FEEDBACK */
+.feedback{margin-top:14px;padding:12px 16px;border-radius:10px;font-size:13px;line-height:1.5;display:none;}
+.feedback.show{display:block;}
+.fb-ok{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);color:#a8f0c0;}
+.fb-err{background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.25);color:#f0b8b0;}
+.fb-title{font-weight:700;margin-bottom:4px;}
+
+/* NAV BTNS */
+.nav-btns{display:flex;gap:10px;margin-top:24px;justify-content:space-between;align-items:center;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:12px 22px;border-radius:9px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all 0.18s;}
+.btn-primary{background:linear-gradient(135deg,var(--green2),var(--green));color:#051005;box-shadow:0 3px 14px rgba(46,204,113,0.25);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 5px 20px rgba(46,204,113,0.4);}
+.btn-primary:disabled{opacity:0.35;cursor:default;transform:none;box-shadow:none;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.btn-outline:hover{border-color:var(--green);color:var(--text);}
+.btn-lg{padding:14px 30px;font-size:15px;}
+
+/* RESULTS */
+.results-wrap{text-align:center;padding:24px 0;}
+.congrats{font-size:60px;margin-bottom:14px;}
+.res-badge{display:inline-block;padding:10px 28px;border-radius:100px;font-size:20px;font-weight:800;margin-bottom:16px;}
+.rb-basico{border:2px solid var(--green);color:var(--green);background:rgba(46,204,113,0.1);}
+.rb-intermedio{border:2px solid var(--yellow);color:var(--yellow);background:rgba(241,196,15,0.1);}
+.rb-avanzado{border:2px solid var(--orange);color:var(--orange);background:rgba(230,126,34,0.1);}
+.score-circle{width:110px;height:110px;border-radius:50%;margin:16px auto;display:flex;align-items:center;justify-content:center;flex-direction:column;border:3px solid var(--green);}
+.sc-num{font-size:34px;font-weight:800;color:var(--green);line-height:1;}
+.sc-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0;}
+@media(max-width:480px){.breakdown{grid-template-columns:1fr;}}
+.bd-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+.bd-name{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.bd-val{font-size:20px;font-weight:800;}
+.bd-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden;}
+.bd-fill{height:100%;border-radius:2px;}
+.res-msg{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 22px;margin:14px 0;text-align:left;font-size:13px;line-height:1.6;}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="logo">
+    <img src="data:image/jpeg;base64,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" alt="Ruta360">
+    <span class="logo-text">Ruta<em>360</em></span>
+  </div>
+  <div class="xp-badge">⭐ <span id="xp-count">0</span> XP</div>
+</nav>
+
+<div id="app">
+
+<!-- HOME -->
+<div class="screen active" id="scr-home">
+  <div class="hero">
+    <div class="hero-badge">✦ Prática de Português · Práctica de Portugués</div>
+    <h1>Escolhe o teu<br><em>nível e pratica</em></h1>
+    <p>Ejercicios de vocabulario, gramática y frases reales. Elige tu nivel y comienza.</p>
+  </div>
+  <div class="level-cards">
+    <div class="level-card basico" onclick="selectLevel('basico')">
+      <div class="lc-icon">🌱</div>
+      <div class="lc-level">A2 · Básico</div>
+      <div class="lc-name">Básico</div>
+      <div class="lc-sub">Fundamentos do português</div>
+      <div class="lc-info"><span>📝 15 ejerc.</span><span>⏱ ~10 min</span></div>
+    </div>
+    <div class="level-card intermedio" onclick="selectLevel('intermedio')">
+      <div class="lc-icon">⚡</div>
+      <div class="lc-level">B1 · Intermedio</div>
+      <div class="lc-name">Intermediário</div>
+      <div class="lc-sub">Fluidez e expressão</div>
+      <div class="lc-info"><span>📝 15 ejerc.</span><span>⏱ ~12 min</span></div>
+    </div>
+    <div class="level-card avanzado" onclick="selectLevel('avanzado')">
+      <div class="lc-icon">🔥</div>
+      <div class="lc-level">B2 · Avanzado</div>
+      <div class="lc-name">Avançado</div>
+      <div class="lc-sub">Domínio natural da língua</div>
+      <div class="lc-info"><span>📝 15 ejerc.</span><span>⏱ ~15 min</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRACTICE -->
+<div class="screen" id="scr-practice">
+  <div class="prog-wrap">
+    <div class="prog-top">
+      <span class="prog-label" id="prog-label">—</span>
+      <span class="prog-count" id="prog-count">0 / 15</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div class="sec-tabs" id="sec-tabs"></div>
+  <div id="ex-area"></div>
+  <div class="nav-btns">
+    <button class="btn btn-outline" onclick="goHome()">← Voltar / Volver</button>
+    <button class="btn btn-primary" id="next-btn" onclick="nextEx()" disabled>
+      Próximo → / Siguiente →
+    </button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="scr-results">
+  <div class="results-wrap">
+    <div class="congrats" id="res-icon"></div>
+    <div id="res-badge"></div>
+    <h2 id="res-title" style="font-size:22px;font-weight:800;margin-bottom:6px;"></h2>
+    <p id="res-sub" style="color:var(--muted);font-size:14px;margin-bottom:4px;"></p>
+    <div class="score-circle">
+      <div class="sc-num" id="res-score">0</div>
+      <div class="sc-lbl">/ 15 pts</div>
+    </div>
+    <div class="breakdown" id="res-breakdown"></div>
+    <div class="res-msg" id="res-msg"></div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+      <button class="btn btn-primary btn-lg" onclick="retryLevel()">🔄 Tentar novamente / Intentar de nuevo</button>
+      <button class="btn btn-outline btn-lg" onclick="goHome()">🏠 Outros níveis / Otros niveles</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════
+// DATA
+// ═══════════════════════════════════
+const EXERCISES = {
+basico:[
+  {id:"B1",sec:"Vocabulário",type:"mcq",xp:5,
+   instr:"Escolha a tradução correta / Elige la traducción correcta",
+   q:"¿Cómo se dice <em>desayuno</em> en português?",
+   opts:["Almoço","Jantar","Café da manhã","Lanche"],
+   ans:2,fb:"'Café da manhã' es el desayuno en Brasil. En Portugal se dice 'pequeno-almoço'."},
+  {id:"B2",sec:"Vocabulário",type:"mcq",xp:5,
+   instr:"Escolha a opção correta / Elige la opción correcta",
+   q:"¿Qué significa <em>'saudade'</em>?",
+   opts:["Alegría intensa","Nostalgia / melancolía por algo querido","Sorpresa","Miedo"],
+   ans:1,fb:"'Saudade' es una palabra única que describe una nostalgia profunda. ¡No tiene traducción exacta al español!"},
+  {id:"B3",sec:"Vocabulário",type:"mcq",xp:5,
+   instr:"Complete a frase / Completa la frase",
+   q:"Eu moro numa casa com três <em>___</em> e dois banheiros.",
+   opts:["cozinhas","quartos","janelas","portas"],
+   ans:1,fb:"'Quartos' = habitaciones/dormitorios."},
+  {id:"B4",sec:"Vocabulário",type:"fill",xp:5,
+   instr:"Escribe en portugués / Escreva em português",
+   q:"¿Cómo se dice <em>'trabajo'</em> (sustantivo) en portugués?",
+   ans:"trabalho",alts:["Trabalho","TRABALHO"],
+   fb:"'Trabalho' = trabajo. El verbo es 'trabalhar'. ¡Ojo con la h!"},
+  {id:"B5",sec:"Vocabulário",type:"match",xp:5,
+   instr:"Une cada palabra con su traducción / Ligue cada palavra à sua tradução",
+   pairs:[{L:"Ontem",R:"Ayer"},{L:"Hoje",R:"Hoy"},{L:"Amanhã",R:"Mañana"},{L:"Agora",R:"Ahora"}]},
+  {id:"B6",sec:"Gramática",type:"mcq",xp:5,
+   instr:"Escolha a forma verbal correta / Elige la forma verbal correcta",
+   q:"Ela ___ para o trabalho todos os dias.",
+   opts:["vai","vou","vamos","vão"],
+   ans:0,fb:"3ª persona: ela VAI. Conjugación: eu vou, tu vais, ele/ela vai, nós vamos, vocês/eles vão."},
+  {id:"B7",sec:"Gramática",type:"mcq",xp:5,
+   instr:"Escolha o artigo correto / Elige el artículo correcto",
+   q:"___ livro está na mesa.",
+   opts:["A","O","As","Os"],
+   ans:1,fb:"'Livro' es masculino → artículo 'O'. En portugués: O (masc.) / A (fem.) / Os/As (plurales)."},
+  {id:"B8",sec:"Gramática",type:"reorder",xp:5,
+   instr:"Ordena las palabras / Ordene as palavras",
+   q:"Forma la frase: <em>Eu / gosto / muito / de / café</em>",
+   words:["gosto","Eu","café","de","muito"],ans:"Eu gosto muito de café",
+   fb:"'Eu gosto muito de café' = A mí me gusta mucho el café. 'Gostar de' = gustar."},
+  {id:"B9",sec:"Gramática",type:"fill",xp:5,
+   instr:"Completa con el pretérito perfecto / Complete com o pretérito perfeito",
+   q:"Ontem eu ___ ao cinema. (ir)",
+   ans:"fui",alts:["FUI"],
+   fb:"'Fui' es el pretérito perfecto de IR. Conjugación: eu fui, tu foste, ele foi, nós fomos, eles foram."},
+  {id:"B10",sec:"Gramática",type:"mcq",xp:5,
+   instr:"Escolha a preposição correta / Elige la preposición correcta",
+   q:"Ela mora ___ Brasil desde 2010.",
+   opts:["em","no","na","de"],
+   ans:1,fb:"'No Brasil' = contracción em+o. Brasil es masculino: 'no'. Para femeninos: 'na Argentina'."},
+  {id:"B11",sec:"Frases Reais",type:"mcq",xp:5,
+   instr:"¿Cómo respondes a esta pregunta? / Como respondes?",
+   q:"Alguém te pergunta: <em>'Tudo bem?'</em> — ¿cuál es la respuesta más natural?",
+   opts:["Sim, obrigado!","Tudo ótimo! E você?","Não entendo.","Boa tarde!"],
+   ans:1,fb:"'Tudo bem?' = ¿Cómo estás? La respuesta natural: 'Tudo ótimo! E você?' o 'Tudo bem, e você?'"},
+  {id:"B12",sec:"Frases Reais",type:"mcq",xp:5,
+   instr:"Identifica la frase correcta / Identifique a frase correta",
+   q:"¿Cuál de estas frases significa <em>'¿Cuánto cuesta?'</em>?",
+   opts:["Onde fica?","Quanto custa?","Como vai?","O que é isso?"],
+   ans:1,fb:"'Quanto custa?' = ¿Cuánto cuesta? Otras: 'Onde fica?' (¿Dónde queda?), 'O que é isso?' (¿Qué es eso?)."},
+  {id:"B13",sec:"Frases Reais",type:"fill",xp:5,
+   instr:"Completa la frase de cortesía / Complete a frase de cortesia",
+   q:"¿Cómo dices <em>'por favor'</em> en portugués?",
+   ans:"por favor",alts:["Por favor","Por Favor"],
+   fb:"'Por favor' ¡es igual en ambos idiomas! También: 'Por gentileza' (más formal)."},
+  {id:"B14",sec:"Frases Reais",type:"reorder",xp:5,
+   instr:"Forma una frase de presentación / Forme uma frase de apresentação",
+   q:"Ordena: <em>me / Eu / João / chamo</em>",
+   words:["me","Eu","João","chamo"],ans:"Eu me chamo João",
+   fb:"'Eu me chamo João' = Me llamo Juan. También: 'Meu nome é João'. Nota el pronombre reflexivo 'me'."},
+  {id:"B15",sec:"Frases Reais",type:"mcq",xp:5,
+   instr:"Elige la despedida correcta para la noche / Escolha a despedida",
+   q:"Son las 10pm, te despides de alguien. ¿Qué dices?",
+   opts:["Bom dia!","Boa tarde!","Boa noite!","Até logo!"],
+   ans:2,fb:"'Boa noite!' = ¡Buenas noches! Se usa para saludar y despedirse de noche. 'Até logo!' = ¡Hasta luego!"}
+],
+intermedio:[
+  {id:"I1",sec:"Vocabulário",type:"mcq",xp:5,
+   instr:"Escolha a palavra mais adequada / Elige la palabra más adecuada",
+   q:"O chefe pediu um <em>___</em> detalhado sobre as vendas do trimestre.",
+   opts:["receita","relatório","pedido","contrato"],
+   ans:1,fb:"'Relatório' = informe/reporte. Palabra clave en contextos profesionales brasileños."},
+  {id:"I2",sec:"Vocabulário",type:"mcq",xp:5,
+   instr:"Identifica el significado / Identifique o significado",
+   q:"¿Qué significa la expresión <em>'dar um jeito'</em>?",
+   opts:["Darse por vencido","Encontrar una solución creativa","Perderse","Cambiar de trabajo"],
+   ans:1,fb:"'Dar um jeito' = resolver algo de manera creativa o improvisada. Parte del famoso 'jeitinho brasileiro'."},
+  {id:"I3",sec:"Vocabulário",type:"fill",xp:5,
+   instr:"Traduce al portugués / Traduza para o português",
+   q:"La palabra <em>'necesitar'</em> en portugués es...",
+   ans:"precisar",alts:["Precisar","PRECISAR"],
+   fb:"'Precisar' = necesitar. Ej: 'Eu preciso de ajuda' = Necesito ayuda. ¡Cuidado con los falsos amigos!"},
+  {id:"I4",sec:"Vocabulário",type:"match",xp:5,
+   instr:"Une los verbos con su significado / Ligue os verbos",
+   pairs:[{L:"Conseguir",R:"Lograr/poder"},{L:"Precisar",R:"Necesitar"},{L:"Costumar",R:"Soler"},{L:"Acabar",R:"Terminar"}]},
+  {id:"I5",sec:"Vocabulário",type:"mcq",xp:5,
+   instr:"Elige el término correcto / Escolha o termo correto",
+   q:"¿Cómo se dice <em>'red social'</em> en Brasil?",
+   opts:["Rede política","Rede social","Red sociais","Mídia digital"],
+   ans:1,fb:"'Rede social' = red social. También se usa 'mídias sociais' (plural) para el concepto general."},
+  {id:"I6",sec:"Gramática",type:"mcq",xp:5,
+   instr:"Elige el tiempo verbal correcto / Escolha o tempo verbal",
+   q:"Quando ela chegou, eu já ___ jantar. (fazer)",
+   opts:["fiz","tinha feito","faço","fazia"],
+   ans:1,fb:"Pretérito Mais-que-perfeito: tinha + participio. Acción completada ANTES de otra en el pasado."},
+  {id:"I7",sec:"Gramática",type:"mcq",xp:5,
+   instr:"Selecciona la opción correcta / Selecione a opção correta",
+   q:"Se eu ___ mais tempo, viajaria pelo Brasil inteiro.",
+   opts:["tiver","tivesse","tenho","tinha"],
+   ans:1,fb:"Condicional: Se + Imperfeito do Subjuntivo (tivesse) + Condicional (viajaria). = Si yo tuviera más tiempo..."},
+  {id:"I8",sec:"Gramática",type:"reorder",xp:5,
+   instr:"Ordena la frase / Ordene a frase",
+   q:"Ordena: <em>disse / Ele / que / não / poderia / vir</em>",
+   words:["disse","Ele","que","não","poderia","vir"],ans:"Ele disse que não poderia vir",
+   fb:"Discurso indireto: 'Ele disse que não poderia vir' = Él dijo que no podría venir."},
+  {id:"I9",sec:"Gramática",type:"fill",xp:5,
+   instr:"Completa con el gerundio / Complete com o gerúndio",
+   q:"Ela está ___ uma carta. (escrever)",
+   ans:"escrevendo",alts:["Escrevendo","ESCREVENDO"],
+   fb:"Gerúndio: verbo + -ando/-endo/-indo. 'Escrever' → 'escrevendo'. En Portugal se usa 'a escrever'."},
+  {id:"I10",sec:"Gramática",type:"mcq",xp:5,
+   instr:"Elige la contracción correcta / Escolha a contração",
+   q:"Fui ___ cidade no fim de semana.",
+   opts:["a a","para a","à","na"],
+   ans:2,fb:"'À' = contracción a + a. 'Fui à cidade'. Femenino: 'à'. Masculino: 'ao mercado'."},
+  {id:"I11",sec:"Frases Reais",type:"mcq",xp:5,
+   instr:"Identifica la frase más natural / Identifique a frase mais natural",
+   q:"Quieres pedir un favor en el trabajo. ¿Qué dices más naturalmente?",
+   opts:["Você pode me ajudar com isso?","Eu quero sua ajuda agora.","Ajude-me imediatamente.","Preciso de favor."],
+   ans:0,fb:"'Você pode me ajudar com isso?' = ¿Puedes ayudarme? Es natural y cortés en el contexto brasileño."},
+  {id:"I12",sec:"Frases Reais",type:"fill",xp:5,
+   instr:"Completa la expresión / Complete a expressão",
+   q:"Para decir '¡Claro que sí!': <em>'Claro ___ sim!'</em>",
+   ans:"que",alts:["QUE","Que"],
+   fb:"'Claro que sim!' = ¡Claro que sí! Su opuesto: 'Claro que não!'"},
+  {id:"I13",sec:"Frases Reais",type:"mcq",xp:5,
+   instr:"Lee el contexto y responde / Leia e responda",
+   dial:"— Oi! Você toparia sair para jantar hoje à noite?\n— Que saudade! Faz tempo que não nos vemos.",
+   q:"¿Qué expresa <em>'Que saudade!'</em> en este contexto?",
+   opts:["Rechazo a la invitación","Nostalgia y alegría de reencontrarse","Confusión","Enojo"],
+   ans:1,fb:"'Que saudade!' expresa la emoción de extrañar a alguien y la alegría de volver a conectar."},
+  {id:"I14",sec:"Frases Reais",type:"reorder",xp:5,
+   instr:"Forma una frase para hacer planes / Forme uma frase",
+   q:"Ordena: <em>de / Que / você / tal / ir / ao / cinema?</em>",
+   words:["de","Que","você","tal","ir","ao","cinema?"],ans:"Que tal você ir ao cinema?",
+   fb:"'Que tal...?' = ¿Qué tal si...? Forma muy natural de hacer sugerencias en Brasil."},
+  {id:"I15",sec:"Frases Reais",type:"mcq",xp:5,
+   instr:"Elige la expresión correcta / Escolha a expressão",
+   q:"Tu colega te dice algo sorprendente. ¿Cómo expresas sorpresa en informal?",
+   opts:["Com certeza!","Nossa! / Caramba!","Que pena!","De nada!"],
+   ans:1,fb:"'Nossa!' o 'Caramba!' = ¡Vaya! / ¡Caramba! Muy brasileñas. 'Que pena!' = ¡Qué lástima! 'De nada!' = De nada."}
+],
+avanzado:[
+  {id:"A1",sec:"Vocabulário",type:"mcq",xp:5,
+   instr:"Escolha a palavra mais precisa / Elige la palabra más precisa",
+   q:"O político foi acusado de ___ após desviar verbas públicas.",
+   opts:["gentileza","corrupção","inovação","liderança"],
+   ans:1,fb:"'Corrupção' = corrupción. 'Desviar verbas' = malversar fondos. Vocabulario político-social esencial."},
+  {id:"A2",sec:"Vocabulário",type:"fill",xp:5,
+   instr:"Completa el término empresarial / Complete o termo empresarial",
+   q:"'Reunião de ___' es el término para una reunión de equipo en Brasil.",
+   ans:"equipe",alts:["Equipe","EQUIPE"],
+   fb:"'Reunião de equipe' = reunión de equipo. También se usa 'time' (del inglés team) en empresas multinacionales."},
+  {id:"A3",sec:"Vocabulário",type:"match",xp:5,
+   instr:"Conecta expresiones idiomáticas / Conecte as expressões idiomáticas",
+   pairs:[{L:"Pisar na bola",R:"Meter la pata"},{L:"Engolir sapo",R:"Aguantarse"},{L:"Dar o fora",R:"Irse/largarse"},{L:"Ficar na mão",R:"Quedar plantado"}]},
+  {id:"A4",sec:"Vocabulário",type:"mcq",xp:5,
+   instr:"Identifica el registro más formal / Identifique o registro mais formal",
+   q:"En un email formal de negocios, ¿cuál es la apertura más apropiada?",
+   opts:["Oi, tudo bem?","E aí, chefe?","Prezado(a) Senhor(a),","Olá pessoal,"],
+   ans:2,fb:"'Prezado(a) Senhor(a),' = Estimado/a Señor/a. Cierre formal: 'Atenciosamente,'"},
+  {id:"A5",sec:"Vocabulário",type:"mcq",xp:5,
+   instr:"Elige el conector más apropiado / Escolha o conector",
+   q:"A proposta era interessante; ___, não tínhamos orçamento suficiente.",
+   opts:["portanto","além disso","no entanto","visto que"],
+   ans:2,fb:"'No entanto' = sin embargo (contraste). 'Portanto' = por lo tanto. 'Além disso' = además. 'Visto que' = dado que."},
+  {id:"A6",sec:"Gramática",type:"mcq",xp:5,
+   instr:"Selecciona la forma correcta / Selecione a forma correta",
+   q:"É importante que todos os funcionários ___ o relatório antes da reunião.",
+   opts:["leem","leiam","lerão","leram"],
+   ans:1,fb:"Subjuntivo: 'É importante que' + subj. 'Ler' → 'leiam'. Usan subjuntivo: é importante/necessário/provável que..."},
+  {id:"A7",sec:"Gramática",type:"mcq",xp:5,
+   instr:"Elige la voz pasiva correcta / Escolha a voz passiva",
+   q:"La empresa despidió a 50 empleados → ___",
+   opts:["50 funcionários foram demitidos pela empresa.","A empresa foram demitidos.","50 funcionários demitiu.","Demitiu foram 50."],
+   ans:0,fb:"Voz pasiva: sujeto + ser + participio + por + agente. 'Foram demitidos' = fueron despedidos."},
+  {id:"A8",sec:"Gramática",type:"reorder",xp:5,
+   instr:"Construye la oración con conector / Construa a oração",
+   q:"Ordena: <em>o / Embora / caro / produto / vendeu / fosse / bem</em>",
+   words:["o","Embora","caro","produto","vendeu","fosse","bem"],ans:"Embora o produto fosse caro vendeu bem",
+   fb:"'Embora' + Subjuntivo = Aunque. 'Embora fosse caro, vendeu bem' = Aunque era caro, se vendió bien."},
+  {id:"A9",sec:"Gramática",type:"fill",xp:5,
+   instr:"Completa con el participio / Complete com o particípio",
+   q:"O projeto foi ___ pela equipe em tempo récorde. (concluir)",
+   ans:"concluído",alts:["Concluído","CONCLUÍDO"],
+   fb:"'Concluir' → 'concluído'. Participios irregulares: feito, dito, posto, visto, aberto."},
+  {id:"A10",sec:"Gramática",type:"mcq",xp:5,
+   instr:"Elige la forma correcta / Escolha a forma correta",
+   q:"___ você terminar o relatório, me avise.",
+   opts:["Se","Quando","Embora","Porque"],
+   ans:1,fb:"'Quando' + Futuro do Subjuntivo = Cuando + subj. 'Quando você terminar' = Cuando termines. ¡Muy usado en portugués!"},
+  {id:"A11",sec:"Frases Reais",type:"mcq",xp:5,
+   dial:"Contexto: Reunión de negocios en São Paulo. Tu cliente dice: 'Vamos fechar esse negócio hoje?'",
+   instr:"Elige la respuesta más profesional y natural / Escolha a resposta",
+   q:"¿Cuál es la respuesta más apropiada?",
+   opts:["Não sei, talvez.","Com certeza! Estou muito animado com essa parceria.","Preciso pensar mais.","Não tenho interesse."],
+   ans:1,fb:"'Estou muito animado com essa parceria' = Estoy muy entusiasmado. En Brasil, el entusiasmo genuino es muy valorado."},
+  {id:"A12",sec:"Frases Reais",type:"fill",xp:5,
+   instr:"Completa el refrán brasileño / Complete o provérbio",
+   q:"<em>'Quem não arrisca, não ___.'</em>",
+   ans:"petisca",alts:["Petisca","PETISCA"],
+   fb:"'Quem não arrisca, não petisca' = El que no arriesga, no gana. 'Petiscar' = picotear bocadillos."},
+  {id:"A13",sec:"Frases Reais",type:"mcq",xp:5,
+   instr:"Identifica el significado coloquial / Identifique o significado",
+   q:"Un colega dice: <em>'Aquela reunião foi uma enrolação total.'</em> ¿Qué significa?",
+   opts:["Fue muy productiva","Fue una total pérdida de tiempo","Fue interesante","Fue cancelada"],
+   ans:1,fb:"'Enrolação' = lío / pérdida de tiempo. 'Enrolar' informalmente = enredar, hacer perder tiempo."},
+  {id:"A14",sec:"Frases Reais",type:"reorder",xp:5,
+   instr:"Construye una crítica profesional / Construa uma crítica profissional",
+   q:"Ordena: <em>que / Acredito / abordagem / diferente / uma / precisamos / de</em>",
+   words:["que","Acredito","abordagem","diferente","uma","precisamos","de"],ans:"Acredito que precisamos de uma abordagem diferente",
+   fb:"'Acredito que precisamos de uma abordagem diferente' = Creo que necesitamos un enfoque diferente. Muy profesional."},
+  {id:"A15",sec:"Frases Reais",type:"mcq",xp:5,
+   instr:"Elige la expresión para argumentar / Escolha a expressão",
+   q:"Quieres reforzar tu argumento en un debate. ¿Qué expresión usas?",
+   opts:["Não sei bem...","Além do mais, os dados comprovam que...","Talvez sim, talvez não.","É complicado."],
+   ans:1,fb:"'Além do mais, os dados comprovam que...' = Además, los datos comprueban que... Conectores: 'Além disso', 'Por outro lado', 'Em suma'."}
+]
+};
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+let LVL=null, EXCS=[], IDX=0, ANSWERED=false, SCORE=0, XP=0;
+let SEC_SCORES={};
+let MATCH_SEL={L:null,R:null}, MATCH_DONE=0;
+let REORDER={placed:[],remaining:[]};
+
+// ═══════════════════════════════════
+// SCREEN NAV
+// ═══════════════════════════════════
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goHome(){ show('scr-home'); }
+
+// ═══════════════════════════════════
+// SELECT LEVEL
+// ═══════════════════════════════════
+function selectLevel(lv){
+  LVL=lv; EXCS=EXERCISES[lv]; IDX=0; SCORE=0; ANSWERED=false; SEC_SCORES={};
+  EXCS.forEach(e=>{ if(!SEC_SCORES[e.sec]) SEC_SCORES[e.sec]={c:0,t:0}; SEC_SCORES[e.sec].t++; });
+  document.getElementById('prog-fill').className='prog-fill fill-'+lv;
+  buildTabs();
+  renderEx();
+  show('scr-practice');
+}
+function retryLevel(){ selectLevel(LVL); }
+
+// ═══════════════════════════════════
+// TABS
+// ═══════════════════════════════════
+function buildTabs(){
+  const secs=[...new Set(EXCS.map(e=>e.sec))];
+  document.getElementById('sec-tabs').innerHTML=
+    secs.map(s=>`<div class="sec-tab" id="tab-${s.replace(/ /g,'_')}">${s}</div>`).join('');
+}
+function updateTabs(){
+  const secs=[...new Set(EXCS.map(e=>e.sec))];
+  const curSec=EXCS[IDX]?.sec;
+  const doneSecs=new Set(EXCS.slice(0,IDX).map(e=>e.sec)
+    .filter(s=>!EXCS.slice(IDX).find(e=>e.sec===s)));
+  secs.forEach(s=>{
+    const t=document.getElementById('tab-'+s.replace(/ /g,'_'));
+    if(!t)return;
+    t.className='sec-tab'+(s===curSec?' active':doneSecs.has(s)?' done':'');
+  });
+}
+
+// ═══════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════
+function updateProg(){
+  const pct=Math.round((IDX/EXCS.length)*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-count').textContent=IDX+' / '+EXCS.length;
+  document.getElementById('prog-label').textContent=EXCS[IDX]?.sec||'';
+  updateTabs();
+}
+
+// ═══════════════════════════════════
+// RENDER EXERCISE
+// ═══════════════════════════════════
+function renderEx(){
+  ANSWERED=false;
+  MATCH_SEL={L:null,R:null}; MATCH_DONE=0;
+  REORDER={placed:[],remaining:[]};
+
+  const btn=document.getElementById('next-btn');
+  btn.disabled=true;
+  btn.textContent=IDX<EXCS.length-1?'Próximo → / Siguiente →':'Ver resultado ✦';
+  updateProg();
+
+  const ex=EXCS[IDX];
+  if(!ex)return;
+
+  const typeNames={mcq:'Múltipla escolha',fill:'Completar',match:'Ligar',reorder:'Ordenar'};
+  const typeClasses={mcq:'et-mcq',fill:'et-fill',match:'et-match',reorder:'et-reorder'};
+  const levelTag={basico:'A2',intermedio:'B1',avanzado:'B2'}[LVL];
+
+  let html='';
+
+  // Dialogue
+  if(ex.dial){
+    const lines=ex.dial.split('\n').map(l=>`<div>${l}</div>`).join('');
+    html+=`<div class="dialogue"><div class="dialogue-label">💬 Contexto / Diálogo</div>${lines}</div>`;
+  }
+
+  html+=`<div class="ex-card">
+    <div class="ex-header">
+      <span class="ex-type ${typeClasses[ex.type]}">${typeNames[ex.type]}</span>
+      <span class="ex-xp">+${ex.xp} XP · ${levelTag}</span>
+    </div>
+    <div class="ex-instruction">${ex.instr}</div>
+    ${ex.q?`<div class="ex-question">${ex.q}</div>`:''}
+    <div id="ex-body"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>`;
+
+  document.getElementById('ex-area').innerHTML=html;
+
+  // Now render the interactive body (DOM exists now)
+  const body=document.getElementById('ex-body');
+  if(ex.type==='mcq') body.innerHTML=renderMCQ(ex);
+  else if(ex.type==='fill') body.innerHTML=renderFill();
+  else if(ex.type==='match') { body.innerHTML=renderMatch(ex); }
+  else if(ex.type==='reorder') { body.innerHTML=renderReorder(ex); initReorder(ex); }
+}
+
+// ═══════════════════════════════════
+// MCQ
+// ═══════════════════════════════════
+function renderMCQ(ex){
+  const L=['A','B','C','D'];
+  return `<div class="options">${ex.opts.map((o,i)=>
+    `<button class="opt" id="opt${i}" onclick="checkMCQ(${i})">`+
+    `<span class="opt-letter">${L[i]}</span>${o}</button>`
+  ).join('')}</div>`;
+}
+function checkMCQ(sel){
+  if(ANSWERED)return;
+  ANSWERED=true;
+  const ex=EXCS[IDX], ok=sel===ex.ans;
+  document.querySelectorAll('.opt').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===ex.ans)b.classList.add('correct');
+    else if(i===sel&&!ok)b.classList.add('wrong');
+  });
+  showFB(ok,ex.fb);
+  recordScore(ok);
+}
+
+// ═══════════════════════════════════
+// FILL
+// ═══════════════════════════════════
+function renderFill(){
+  return `<div class="fill-row">
+    <input class="fill-input" id="fill-inp" type="text" placeholder="Escreve aqui..."
+      onkeydown="if(event.key==='Enter')checkFill()">
+    <button class="check-btn" onclick="checkFill()">Verificar ✓</button>
+  </div>`;
+}
+function checkFill(){
+  if(ANSWERED)return;
+  const ex=EXCS[IDX];
+  const inp=document.getElementById('fill-inp');
+  if(!inp)return;
+  const val=inp.value.trim().toLowerCase();
+  const ok=val===ex.ans.toLowerCase()||(ex.alts||[]).some(a=>a.toLowerCase()===val);
+  ANSWERED=true;
+  inp.classList.add(ok?'correct':'wrong');
+  inp.disabled=true;
+  if(!ok){
+    const d=document.createElement('div');
+    d.className='wrong-answer';
+    d.textContent='Resposta correta: '+ex.ans;
+    inp.parentNode.appendChild(d);
+  }
+  showFB(ok,ex.fb);
+  recordScore(ok);
+}
+
+// ═══════════════════════════════════
+// MATCH
+// ═══════════════════════════════════
+function renderMatch(ex){
+  // Shuffle right side
+  const rightOrder=[...ex.pairs.map((_,i)=>i)].sort(()=>Math.random()-0.5);
+  const leftHTML=ex.pairs.map((p,i)=>
+    `<div class="m-item" id="ml${i}" onclick="matchClick('L',${i})">${p.L}</div>`
+  ).join('');
+  const rightHTML=rightOrder.map(i=>
+    `<div class="m-item" id="mr${i}" onclick="matchClick('R',${i})">${ex.pairs[i].R}</div>`
+  ).join('');
+  return `<div class="match-wrap">
+    <div class="match-col">${leftHTML}</div>
+    <div class="match-col">${rightHTML}</div>
+  </div>`;
+}
+function matchClick(side,idx){
+  if(ANSWERED)return;
+  const ex=EXCS[IDX];
+  if(side==='L'){
+    if(MATCH_SEL.L!==null){ const prev=document.getElementById('ml'+MATCH_SEL.L); if(prev)prev.classList.remove('sel'); }
+    MATCH_SEL.L=idx;
+    document.getElementById('ml'+idx)?.classList.add('sel');
+  } else {
+    if(MATCH_SEL.R!==null){ const prev=document.getElementById('mr'+MATCH_SEL.R); if(prev)prev.classList.remove('sel'); }
+    MATCH_SEL.R=idx;
+    document.getElementById('mr'+idx)?.classList.add('sel');
+  }
+  if(MATCH_SEL.L!==null && MATCH_SEL.R!==null){
+    // Check if they are the same pair
+    const ok=MATCH_SEL.L===MATCH_SEL.R; // same index = same pair
+    const lEl=document.getElementById('ml'+MATCH_SEL.L);
+    const rEl=document.getElementById('mr'+MATCH_SEL.R);
+    if(ok){
+      lEl?.classList.remove('sel'); lEl?.classList.add('matched');
+      rEl?.classList.remove('sel'); rEl?.classList.add('matched');
+      if(lEl)lEl.onclick=null; if(rEl)rEl.onclick=null;
+      MATCH_DONE++;
+    } else {
+      lEl?.classList.add('bad'); rEl?.classList.add('bad');
+      setTimeout(()=>{
+        lEl?.classList.remove('bad','sel'); rEl?.classList.remove('bad','sel');
+      },700);
+    }
+    MATCH_SEL={L:null,R:null};
+    if(MATCH_DONE===ex.pairs.length){
+      ANSWERED=true;
+      showFB(true,'¡Muy bien! / Muito bem! Conectaste todos los pares correctamente.');
+      recordScore(true);
+    }
+  }
+}
+
+// ═══════════════════════════════════
+// REORDER
+// ═══════════════════════════════════
+function renderReorder(ex){
+  return `<div class="reorder-hint">Haz clic en las palabras para armarlas / Clique nas palavras para montar a frase</div>
+    <div class="word-bank" id="word-bank"></div>
+    <div style="font-size:11px;color:var(--muted);margin:4px 0 4px;">Tu frase / Sua frase:</div>
+    <div class="answer-area" id="answer-area"></div>
+    <button class="check-btn" onclick="checkReorder()">Verificar ✓</button>`;
+}
+function initReorder(ex){
+  REORDER.remaining=[...ex.words].sort(()=>Math.random()-0.5);
+  REORDER.placed=[];
+  drawReorder();
+}
+function drawReorder(){
+  const bank=document.getElementById('word-bank');
+  const area=document.getElementById('answer-area');
+  if(!bank||!area)return;
+  bank.innerHTML=REORDER.remaining.map((w,i)=>
+    `<div class="w-chip" onclick="placeWord(${i})">${w}</div>`
+  ).join('');
+  area.innerHTML=REORDER.placed.map((w,i)=>
+    `<div class="a-chip" onclick="unplaceWord(${i})">${w}</div>`
+  ).join('');
+}
+function placeWord(i){
+  if(ANSWERED)return;
+  REORDER.placed.push(REORDER.remaining.splice(i,1)[0]);
+  drawReorder();
+}
+function unplaceWord(i){
+  if(ANSWERED)return;
+  REORDER.remaining.push(REORDER.placed.splice(i,1)[0]);
+  drawReorder();
+}
+function checkReorder(){
+  if(ANSWERED)return;
+  const ex=EXCS[IDX];
+  const built=REORDER.placed.join(' ');
+  const ok=built.trim()===ex.ans.trim();
+  ANSWERED=true;
+  if(!ok){
+    const area=document.getElementById('answer-area');
+    if(area){
+      const d=document.createElement('div');
+      d.className='wrong-answer'; d.style.cssText='font-size:12px;color:var(--muted);margin-top:6px;';
+      d.textContent='Resposta correta: '+ex.ans;
+      area.after(d);
+    }
+  }
+  showFB(ok,ex.fb);
+  recordScore(ok);
+}
+
+// ═══════════════════════════════════
+// FEEDBACK
+// ═══════════════════════════════════
+function showFB(ok,text){
+  const fb=document.getElementById('feedback');
+  if(!fb)return;
+  fb.className='feedback show '+(ok?'fb-ok':'fb-err');
+  fb.innerHTML=`<div class="fb-title">${ok?'✅ Correto! / ¡Correcto!':'❌ Não foi dessa vez / No fue esta vez'}</div>${text}`;
+  document.getElementById('next-btn').disabled=false;
+}
+
+// ═══════════════════════════════════
+// SCORE
+// ═══════════════════════════════════
+function recordScore(ok){
+  const ex=EXCS[IDX];
+  if(ok){ SCORE++; XP+=ex.xp; if(SEC_SCORES[ex.sec])SEC_SCORES[ex.sec].c++; }
+  document.getElementById('xp-count').textContent=XP;
+}
+
+// ═══════════════════════════════════
+// NEXT
+// ═══════════════════════════════════
+function nextEx(){
+  IDX++;
+  if(IDX>=EXCS.length) showResults();
+  else renderEx();
+}
+
+// ═══════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════
+function showResults(){
+  const total=EXCS.length, pct=Math.round((SCORE/total)*100);
+  const lvLabel={basico:'Básico · A2',intermedio:'Intermediário · B1',avanzado:'Avançado · B2'}[LVL];
+  let icon,title,sub,msg;
+  if(pct>=87){ icon='🏆';title='Excelente resultado!';sub='¡Dominaste este nivel! / Você dominou este nível!';
+    msg=`<strong style="color:var(--green)">✦ Logro desbloqueado / Conquista desbloqueada</strong><br>Tu dominio del ${lvLabel} es muy sólido. Considera avanzar al siguiente nivel en Ruta360.`; }
+  else if(pct>=67){ icon='⭐';title='Bom trabalho / ¡Buen trabajo!';sub='Você está no caminho certo!';
+    msg=`<strong style="color:var(--yellow)">💡 Sugerencia / Sugestão</strong><br>Revisa los ejercicios que fallaste y repite la práctica. Con una sesión más estarás listo para subir de nivel.`; }
+  else{ icon='💪';title='Continue praticando / ¡Sigue practicando!';sub='Cada tentativa te fortalece';
+    msg=`<strong style="color:var(--orange)">🔄 Recomendação</strong><br>Repasa vocabulario y gramática de este nivel antes de intentarlo de nuevo. ¡La constancia es la clave!`; }
+
+  document.getElementById('res-icon').textContent=icon;
+  document.getElementById('res-badge').innerHTML=`<div class="res-badge rb-${LVL}">${lvLabel}</div>`;
+  document.getElementById('res-title').textContent=title;
+  document.getElementById('res-sub').textContent=sub;
+  document.getElementById('res-score').textContent=SCORE;
+  document.getElementById('res-msg').innerHTML=msg;
+
+  document.getElementById('res-breakdown').innerHTML=
+    Object.entries(SEC_SCORES).map(([sec,d])=>{
+      const sp=Math.round((d.c/d.t)*100);
+      const col=sp>=80?'var(--green)':sp>=50?'var(--yellow)':'var(--red)';
+      return `<div class="bd-card">
+        <div class="bd-name">${sec}</div>
+        <div class="bd-val" style="color:${col}">${d.c}/${d.t}</div>
+        <div class="bd-bar"><div class="bd-fill" style="width:${sp}%;background:${col}"></div></div>
+      </div>`;
+    }).join('');
+
+  show('scr-results');
+}
+</script>
+</body>
+</html>
